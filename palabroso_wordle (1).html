@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐻🎮 PALABROSO - El Wordle Madrileño</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc6 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #d4a574 0%, #b8956a 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .logo::before {
+            content: '🐻';
+            font-size: 30px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .logo::after {
+            content: '🎮';
+            font-size: 16px;
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            background: white;
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        h1 {
+            color: #8b4513;
+            font-size: 1.8em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #888;
+            font-size: 0.8em;
+            max-width: 350px;
+            line-height: 1.3;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .stat-label {
+            font-size: 0.7em;
+            color: #666;
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--word-length, 5), 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .letter-box {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            background: white;
+        }
+
+        .letter-box.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .letter-box.partial {
+            background: #ffc107;
+            color: white;
+            border-color: #ffc107;
+        }
+
+        .letter-box.incorrect {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        #guess-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        #guess-input:focus {
+            outline: none;
+            border-color: #8b4513;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #a0522d;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .attempts-container {
+            min-height: 150px;
+            margin-bottom: 15px;
+        }
+
+        .attempts-header {
+            color: #8b4513;
+            margin-bottom: 10px;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .attempts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .attempt-row {
+            display: grid;
+            grid-template-columns: repeat(var(--word-length, 5), 1fr);
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .attempt-letter {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            font-weight: bold;
+            background: #f8f9fa;
+        }
+
+        .attempt-letter.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .attempt-letter.partial {
+            background: #ffc107;
+            color: white;
+            border-color: #ffc107;
+        }
+
+        .attempt-letter.incorrect {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .game-over.win {
+            background: #f8fff9;
+            border: 2px solid #28a745;
+        }
+
+        .game-over.lose {
+            background: #fff8f8;
+            border: 2px solid #dc3545;
+        }
+
+        .new-game-btn {
+            background: #28a745;
+            margin-top: 10px;
+        }
+
+        .new-game-btn:hover {
+            background: #218838;
+        }
+
+        .hint {
+            text-align: center;
+            color: #666;
+            font-size: 0.8em;
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            line-height: 1.3;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .game-container {
+                padding: 15px;
+                margin: 0 5px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .subtitle {
+                font-size: 0.8em;
+            }
+            
+            .description {
+                font-size: 0.75em;
+            }
+            
+            .letter-box {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3em;
+            }
+            
+            .attempt-letter {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9em;
+            }
+            
+            .word-grid {
+                gap: 6px;
+            }
+            
+            .attempt-row {
+                gap: 3px;
+            }
+            
+            #guess-input {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.8em;
+            }
+            
+            .stats {
+                padding: 10px;
+            }
+            
+            .stat-number {
+                font-size: 1.1em;
+            }
+            
+            .stat-label {
+                font-size: 0.65em;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .letter-box {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            
+            .attempt-letter {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8em;
+            }
+            
+            .word-grid {
+                gap: 4px;
+            }
+            
+            .attempt-row {
+                gap: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"></div>
+        <h1>PALABROSO</h1>
+        <p class="subtitle">El reto semanal para los auténticos madrileños</p>
+        <p class="description">Un Wordle madrileño donde debes adivinar palabras relacionadas con la capital. ¡Descubre si eres un verdadero gato! 🐱</p>
+    </div>
+
+    <div class="game-container">
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="games-played">0</div>
+                <div class="stat-label">Jugadas</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="games-won">0</div>
+                <div class="stat-label">Ganadas</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="win-rate">0%</div>
+                <div class="stat-label">% Aciertos</div>
+            </div>
+        </div>
+
+        <div class="word-grid" id="word-grid"></div>
+
+        <div class="input-container">
+            <input type="text" id="guess-input" placeholder="TU PALABRA..." maxlength="10">
+            <button class="btn" id="guess-btn">Probar</button>
+        </div>
+
+        <div class="attempts-container">
+            <h3 class="attempts-header">Intentos: <span id="attempts-count">0/6</span></h3>
+            <div class="attempts-grid" id="attempts-grid"></div>
+        </div>
+
+        <div class="hint" id="hint">
+            💡 Pista: Piensa en palabras relacionadas con Madrid, sus barrios, cultura y actualidad
+        </div>
+
+        <div class="game-over" id="game-over" style="display: none;">
+            <h3 id="game-result"></h3>
+            <p id="game-message"></p>
+            <button class="btn new-game-btn" id="new-game-btn">Nueva Palabra</button>
+        </div>
+    </div>
+
+    <script>
+        const MADRID_WORDS = [
+            { word: 'METRO', hint: 'Transporte subterráneo de Madrid' },
+            { word: 'RETIRO', hint: 'Parque más famoso de Madrid' },
+            { word: 'CHUECA', hint: 'Barrio emblemático del centro' },
+            { word: 'COCIDO', hint: 'Plato típico madrileño' },
+            { word: 'CHAMBI', hint: 'Barrio de Chamberí' },
+            { word: 'TOLDO', hint: 'Nuevo elemento en la Puerta del Sol' },
+            { word: 'BATALLA', hint: 'Naval de Vallekas en julio' },
+            { word: 'SOLETES', hint: 'Reconocimientos gastronómicos Repsol' },
+            { word: 'FLAMENCO', hint: 'Arte en los refugios culturales' },
+            { word: 'MUSEO', hint: 'Refugio cultural en verano' },
+            { word: 'OBRAS', hint: 'Cortes de tráfico en Castellana' },
+            { word: 'CALOR', hint: 'Razón de los refugios culturales' },
+            { word: 'GUIRI', hint: 'Turista extranjero' },
+            { word: 'BOCATA', hint: 'Sándwich madrileño' },
+            { word: 'CHELI', hint: 'Jerga típica de Madrid' },
+            { word: 'MOSTO', hint: 'Bebida típica en las fiestas' },
+            { word: 'RASTRO', hint: 'Mercadillo dominical famoso' },
+            { word: 'PLAZA', hint: 'Espacios públicos emblemáticos' },
+            { word: 'PRADO', hint: 'Museo de arte famoso' },
+            { word: 'MADRID', hint: '¡La capital de España!' }
+        ];
+
+        let currentWord = '';
+        let currentHint = '';
+        let attempts = 0;
+        let maxAttempts = 6;
+        let gameOver = false;
+        let stats = {
+            gamesPlayed: 0,
+            gamesWon: 0
+        };
+
+        // Elementos DOM
+        const wordGrid = document.getElementById('word-grid');
+        const guessInput = document.getElementById('guess-input');
+        const guessBtn = document.getElementById('guess-btn');
+        const attemptsGrid = document.getElementById('attempts-grid');
+        const attemptsCount = document.getElementById('attempts-count');
+        const gameOverDiv = document.getElementById('game-over');
+        const gameResult = document.getElementById('game-result');
+        const gameMessage = document.getElementById('game-message');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const hintDiv = document.getElementById('hint');
+        const gamesPlayedSpan = document.getElementById('games-played');
+        const gamesWonSpan = document.getElementById('games-won');
+        const winRateSpan = document.getElementById('win-rate');
+
+        // Cargar estadísticas
+        function loadStats() {
+            const savedStats = JSON.parse(localStorage.getItem('palabroso-stats') || '{"gamesPlayed": 0, "gamesWon": 0}');
+            stats = savedStats;
+            updateStatsDisplay();
+        }
+
+        // Guardar estadísticas
+        function saveStats() {
+            localStorage.setItem('palabroso-stats', JSON.stringify(stats));
+        }
+
+        // Actualizar display de estadísticas
+        function updateStatsDisplay() {
+            gamesPlayedSpan.textContent = stats.gamesPlayed;
+            gamesWonSpan.textContent = stats.gamesWon;
+            const winRate = stats.gamesPlayed > 0 ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) : 0;
+            winRateSpan.textContent = winRate + '%';
+        }
+
+        // Crear grid de la palabra
+        function createWordGrid() {
+            document.documentElement.style.setProperty('--word-length', currentWord.length);
+            wordGrid.innerHTML = '';
+            
+            for (let i = 0; i < currentWord.length; i++) {
+                const letterBox = document.createElement('div');
+                letterBox.className = 'letter-box';
+                letterBox.id = `letter-${i}`;
+                wordGrid.appendChild(letterBox);
+            }
+        }
+
+        // Evaluar intento
+        function evaluateGuess(guess) {
+            const result = [];
+            const wordArray = currentWord.split('');
+            const guessArray = guess.split('');
+            const wordLetterCount = {};
+            const guessLetterCount = {};
+
+            // Contar letras en la palabra objetivo
+            for (let letter of wordArray) {
+                wordLetterCount[letter] = (wordLetterCount[letter] || 0) + 1;
+            }
+
+            // Primera pasada: marcar letras correctas
+            for (let i = 0; i < guessArray.length; i++) {
+                if (i < wordArray.length && guessArray[i] === wordArray[i]) {
+                    result[i] = 'correct';
+                    wordLetterCount[guessArray[i]]--;
+                } else {
+                    result[i] = null;
+                }
+            }
+
+            // Segunda pasada: marcar letras parciales
+            for (let i = 0; i < guessArray.length; i++) {
+                if (result[i] === null) {
+                    if (wordLetterCount[guessArray[i]] > 0) {
+                        result[i] = 'partial';
+                        wordLetterCount[guessArray[i]]--;
+                    } else {
+                        result[i] = 'incorrect';
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // Mostrar intento en la grilla
+        function displayAttempt(guess, evaluation) {
+            const attemptRow = document.createElement('div');
+            attemptRow.className = 'attempt-row';
+            attemptRow.style.setProperty('--word-length', currentWord.length);
+
+            for (let i = 0; i < currentWord.length; i++) {
+                const letterDiv = document.createElement('div');
+                letterDiv.className = 'attempt-letter';
+                letterDiv.textContent = i < guess.length ? guess[i] : '';
+                
+                if (i < guess.length && evaluation[i]) {
+                    letterDiv.classList.add(evaluation[i]);
+                }
+                
+                attemptRow.appendChild(letterDiv);
+            }
+
+            attemptsGrid.appendChild(attemptRow);
+        }
+
+        // Actualizar palabra mostrada
+        function updateWordDisplay(guess, evaluation) {
+            if (!evaluation) return;
+
+            for (let i = 0; i < Math.min(guess.length, currentWord.length); i++) {
+                const letterBox = document.getElementById(`letter-${i}`);
+                if (letterBox && evaluation[i] === 'correct') {
+                    letterBox.textContent = guess[i];
+                    letterBox.classList.add('correct');
+                }
+            }
+        }
+
+        // Inicializar juego
+        function initGame() {
+            const randomWord = MADRID_WORDS[Math.floor(Math.random() * MADRID_WORDS.length)];
+            currentWord = randomWord.word;
+            currentHint = randomWord.hint;
+            attempts = 0;
+            gameOver = false;
+            
+            createWordGrid();
+            updateAttemptsCount();
+            attemptsGrid.innerHTML = '';
+            gameOverDiv.style.display = 'none';
+            hintDiv.innerHTML = `💡 Pista: ${currentHint}`;
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        // Actualizar contador de intentos
+        function updateAttemptsCount() {
+            attemptsCount.textContent = `${attempts}/${maxAttempts}`;
+        }
+
+        // Hacer intento
+        function makeGuess() {
+            if (gameOver) return;
+            
+            const guess = guessInput.value.toUpperCase().trim();
+            
+            if (!guess) {
+                alert('¡Introduce una palabra!');
+                return;
+            }
+
+            if (guess.length !== currentWord.length) {
+                alert(`La palabra debe tener ${currentWord.length} letras`);
+                return;
+            }
+
+            attempts++;
+            updateAttemptsCount();
+
+            const evaluation = evaluateGuess(guess);
+            displayAttempt(guess, evaluation);
+            updateWordDisplay(guess, evaluation);
+
+            if (guess === currentWord) {
+                // Mostrar palabra completa
+                for (let i = 0; i < currentWord.length; i++) {
+                    const letterBox = document.getElementById(`letter-${i}`);
+                    letterBox.textContent = currentWord[i];
+                    letterBox.classList.add('correct');
+                }
+                endGame(true);
+            } else if (attempts >= maxAttempts) {
+                // Mostrar palabra completa al perder
+                for (let i = 0; i < currentWord.length; i++) {
+                    const letterBox = document.getElementById(`letter-${i}`);
+                    letterBox.textContent = currentWord[i];
+                    letterBox.classList.add('incorrect');
+                }
+                endGame(false);
+            }
+
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        // Terminar juego
+        function endGame(won) {
+            gameOver = true;
+            stats.gamesPlayed++;
+            
+            if (won) {
+                stats.gamesWon++;
+                gameOverDiv.className = 'game-over win';
+                gameResult.textContent = '¡ENHORABUENA! 🎉';
+                gameMessage.textContent = `¡Eres un auténtico madrileño! La palabra era "${currentWord}".`;
+            } else {
+                gameOverDiv.className = 'game-over lose';
+                gameResult.textContent = '¡GAME OVER! 😅';
+                gameMessage.textContent = `La palabra era "${currentWord}". ¡Sigue practicando!`;
+            }
+            
+            saveStats();
+            updateStatsDisplay();
+            gameOverDiv.style.display = 'block';
+        }
+
+        // Event listeners
+        guessBtn.addEventListener('click', makeGuess);
+        newGameBtn.addEventListener('click', initGame);
+
+        guessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+
+        // Inicializar
+        loadStats();
+        initGame();
+    </script>
+</body>
+</html>
