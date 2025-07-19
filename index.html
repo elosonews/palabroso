@@ -291,174 +291,188 @@
         /* Responsive design */
         @media (max-width: 480px) {
             body {
-                padding: 8px;
+                padding: 5px;
             }
             
             .header {
-                margin-bottom: 15px;
+                margin-bottom: 10px;
             }
             
             .logo {
-                width: 50px;
-                height: 50px;
-                margin-bottom: 8px;
+                width: 45px;
+                height: 45px;
+                margin-bottom: 6px;
             }
             
             .logo::before {
-                font-size: 24px;
+                font-size: 20px;
             }
             
             .logo::after {
-                font-size: 12px;
-                bottom: -2px;
-                right: -2px;
+                font-size: 10px;
+                bottom: -1px;
+                right: -1px;
             }
             
             .game-container {
-                padding: 12px;
+                padding: 10px;
                 margin: 0;
-                border-radius: 12px;
+                border-radius: 10px;
+                max-width: 100%;
             }
             
             h1 {
-                font-size: 1.4em;
-                margin-bottom: 3px;
+                font-size: 1.2em;
+                margin-bottom: 2px;
             }
             
             .subtitle {
-                font-size: 0.75em;
-                margin-bottom: 5px;
+                font-size: 0.7em;
+                margin-bottom: 3px;
             }
             
             .description {
-                font-size: 0.7em;
-                max-width: 300px;
+                font-size: 0.65em;
+                max-width: 280px;
             }
             
             .stats {
-                padding: 8px;
-                margin-bottom: 15px;
+                padding: 6px;
+                margin-bottom: 10px;
             }
             
             .stat-number {
-                font-size: 1em;
+                font-size: 0.9em;
             }
             
             .stat-label {
-                font-size: 0.6em;
+                font-size: 0.55em;
             }
             
             .letter-box {
-                width: 35px;
-                height: 35px;
-                font-size: 1.1em;
-                border-radius: 6px;
-            }
-            
-            .attempt-letter {
                 width: 28px;
                 height: 28px;
-                font-size: 0.8em;
-                border-radius: 3px;
-            }
-            
-            .word-grid {
-                gap: 4px;
-                margin-bottom: 15px;
-            }
-            
-            .attempt-row {
-                gap: 2px;
-            }
-            
-            .input-container {
-                gap: 6px;
-                margin-bottom: 12px;
-            }
-            
-            #guess-input {
-                padding: 8px;
-                font-size: 0.85em;
-                border-radius: 6px;
-            }
-            
-            .btn {
-                padding: 8px 12px;
-                font-size: 0.75em;
-                border-radius: 6px;
-            }
-            
-            .attempts-container {
-                min-height: 120px;
-                margin-bottom: 12px;
-            }
-            
-            .attempts-header {
                 font-size: 0.9em;
-                margin-bottom: 8px;
-            }
-            
-            .hint {
-                font-size: 0.7em;
-                padding: 6px;
-                margin-top: 8px;
                 border-radius: 4px;
-            }
-            
-            .game-over {
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 6px;
-            }
-            
-            .game-over h3 {
-                font-size: 1em;
-                margin-bottom: 5px;
-            }
-            
-            .game-over p {
-                font-size: 0.8em;
-                margin-bottom: 8px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .game-container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 1.3em;
-            }
-            
-            .letter-box {
-                width: 32px;
-                height: 32px;
-                font-size: 1em;
+                border-width: 1px;
             }
             
             .attempt-letter {
-                width: 25px;
-                height: 25px;
-                font-size: 0.75em;
+                width: 22px;
+                height: 22px;
+                font-size: 0.7em;
+                border-radius: 2px;
             }
             
             .word-grid {
-                gap: 3px;
+                gap: 2px;
+                margin-bottom: 10px;
+                max-width: 100%;
+                overflow-x: auto;
             }
             
             .attempt-row {
                 gap: 1px;
             }
             
+            .input-container {
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+            
             #guess-input {
                 padding: 6px;
-                font-size: 0.8em;
+                font-size: 0.75em;
+                border-radius: 4px;
             }
             
             .btn {
-                padding: 6px 10px;
+                padding: 6px 8px;
+                font-size: 0.65em;
+                border-radius: 4px;
+            }
+            
+            .attempts-container {
+                min-height: 100px;
+                margin-bottom: 8px;
+            }
+            
+            .attempts-header {
+                font-size: 0.8em;
+                margin-bottom: 6px;
+            }
+            
+            .hint {
+                font-size: 0.65em;
+                padding: 4px;
+                margin-top: 6px;
+                border-radius: 3px;
+            }
+            
+            .game-over {
+                padding: 8px;
+                margin-top: 8px;
+                border-radius: 4px;
+            }
+            
+            .game-over h3 {
+                font-size: 0.9em;
+                margin-bottom: 3px;
+            }
+            
+            .game-over p {
                 font-size: 0.7em;
+                margin-bottom: 6px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .game-container {
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.1em;
+            }
+            
+            .letter-box {
+                width: 25px;
+                height: 25px;
+                font-size: 0.8em;
+            }
+            
+            .attempt-letter {
+                width: 20px;
+                height: 20px;
+                font-size: 0.65em;
+            }
+            
+            .word-grid {
+                gap: 1px;
+            }
+            
+            #guess-input {
+                padding: 5px;
+                font-size: 0.7em;
+            }
+            
+            .btn {
+                padding: 5px 6px;
+                font-size: 0.6em;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .letter-box {
+                width: 22px;
+                height: 22px;
+                font-size: 0.75em;
+            }
+            
+            .attempt-letter {
+                width: 18px;
+                height: 18px;
+                font-size: 0.6em;
             }
         }
     </style>
@@ -512,26 +526,11 @@
 
     <script>
         const MADRID_WORDS = [
-            { word: 'METRO', hint: 'Transporte subterráneo de Madrid' },
-            { word: 'RETIRO', hint: 'Parque más famoso de Madrid' },
-            { word: 'CHUECA', hint: 'Barrio emblemático del centro' },
-            { word: 'COCIDO', hint: 'Plato típico madrileño' },
-            { word: 'CHAMBI', hint: 'Barrio de Chamberí' },
-            { word: 'TOLDO', hint: 'Nuevo elemento en la Puerta del Sol' },
-            { word: 'BATALLA', hint: 'Naval de Vallekas en julio' },
-            { word: 'SOLETES', hint: 'Reconocimientos gastronómicos Repsol' },
-            { word: 'FLAMENCO', hint: 'Arte en los refugios culturales' },
-            { word: 'MUSEO', hint: 'Refugio cultural en verano' },
-            { word: 'OBRAS', hint: 'Cortes de tráfico en Castellana' },
-            { word: 'CALOR', hint: 'Razón de los refugios culturales' },
-            { word: 'GUIRI', hint: 'Turista extranjero' },
-            { word: 'BOCATA', hint: 'Sándwich madrileño' },
-            { word: 'CHELI', hint: 'Jerga típica de Madrid' },
-            { word: 'MOSTO', hint: 'Bebida típica en las fiestas' },
-            { word: 'RASTRO', hint: 'Mercadillo dominical famoso' },
-            { word: 'PLAZA', hint: 'Espacios públicos emblemáticos' },
-            { word: 'PRADO', hint: 'Museo de arte famoso' },
-            { word: 'MADRID', hint: '¡La capital de España!' }
+            { word: 'DONACION', hint: 'Urgente en hospitales madrileños' },
+            { word: 'JUVENTUD', hint: 'Fuente mítica del Parque del Oeste' },
+            { word: 'MULTA', hint: 'Lo que generan los radares madrileños' },
+            { word: 'AUTOCINE', hint: 'Lugar del Reggaeton Millennial Fest' },
+            { word: 'RADAR', hint: 'El del km 20 M-40 es el más activo' },
         ];
 
         let currentWord = '';
@@ -598,7 +597,6 @@
             const wordArray = currentWord.split('');
             const guessArray = guess.split('');
             const wordLetterCount = {};
-            const guessLetterCount = {};
 
             // Contar letras en la palabra objetivo
             for (let letter of wordArray) {
