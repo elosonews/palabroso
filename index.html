@@ -427,14 +427,6 @@
         }
 
         @media (max-width: 360px) {
-            .game-container {
-                padding: 8px;
-            }
-            
-            h1 {
-                font-size: 1.1em;
-            }
-            
             .letter-box {
                 width: 25px;
                 height: 25px;
@@ -449,16 +441,6 @@
             
             .word-grid {
                 gap: 1px;
-            }
-            
-            #guess-input {
-                padding: 5px;
-                font-size: 0.7em;
-            }
-            
-            .btn {
-                padding: 5px 6px;
-                font-size: 0.6em;
             }
         }
 
@@ -514,7 +496,7 @@
         </div>
 
         <div class="hint" id="hint">
-            💡 Pista: Piensa en palabras relacionadas con Madrid, sus barrios, cultura y actualidad
+            💡 Pista: Piensa en palabras relacionadas con Madrid
         </div>
 
         <div class="game-over" id="game-over" style="display: none;">
@@ -525,12 +507,13 @@
     </div>
 
     <script>
-        const MADRID_WORDS = [
+        // SOLO 5 PALABRAS NUEVAS
+        const WORDS = [
             { word: 'DONACION', hint: 'Urgente en hospitales madrileños' },
             { word: 'JUVENTUD', hint: 'Fuente mítica del Parque del Oeste' },
             { word: 'MULTA', hint: 'Lo que generan los radares madrileños' },
             { word: 'AUTOCINE', hint: 'Lugar del Reggaeton Millennial Fest' },
-            { word: 'RADAR', hint: 'El del km 20 M-40 es el más activo' },
+            { word: 'RADAR', hint: 'El del km 20 M-40 es el más activo' }
         ];
 
         let currentWord = '';
@@ -538,12 +521,10 @@
         let attempts = 0;
         let maxAttempts = 6;
         let gameOver = false;
-        let stats = {
-            gamesPlayed: 0,
-            gamesWon: 0
-        };
+        let currentWordIndex = 0;
+        let stats = { gamesPlayed: 0, gamesWon: 0 };
 
-        // Elementos DOM
+        // DOM elements
         const wordGrid = document.getElementById('word-grid');
         const guessInput = document.getElementById('guess-input');
         const guessBtn = document.getElementById('guess-btn');
@@ -558,19 +539,19 @@
         const gamesWonSpan = document.getElementById('games-won');
         const winRateSpan = document.getElementById('win-rate');
 
-        // Cargar estadísticas
+        // Load stats
         function loadStats() {
-            const savedStats = JSON.parse(localStorage.getItem('palabroso-stats') || '{"gamesPlayed": 0, "gamesWon": 0}');
-            stats = savedStats;
+            const saved = JSON.parse(localStorage.getItem('palabroso-stats') || '{"gamesPlayed": 0, "gamesWon": 0}');
+            stats = saved;
             updateStatsDisplay();
         }
 
-        // Guardar estadísticas
+        // Save stats
         function saveStats() {
             localStorage.setItem('palabroso-stats', JSON.stringify(stats));
         }
 
-        // Actualizar display de estadísticas
+        // Update stats display
         function updateStatsDisplay() {
             gamesPlayedSpan.textContent = stats.gamesPlayed;
             gamesWonSpan.textContent = stats.gamesWon;
@@ -578,7 +559,7 @@
             winRateSpan.textContent = winRate + '%';
         }
 
-        // Crear grid de la palabra
+        // Create word grid
         function createWordGrid() {
             document.documentElement.style.setProperty('--word-length', currentWord.length);
             wordGrid.innerHTML = '';
@@ -591,34 +572,34 @@
             }
         }
 
-        // Evaluar intento
+        // Evaluate guess
         function evaluateGuess(guess) {
             const result = [];
             const wordArray = currentWord.split('');
             const guessArray = guess.split('');
-            const wordLetterCount = {};
+            const letterCount = {};
 
-            // Contar letras en la palabra objetivo
+            // Count letters in target word
             for (let letter of wordArray) {
-                wordLetterCount[letter] = (wordLetterCount[letter] || 0) + 1;
+                letterCount[letter] = (letterCount[letter] || 0) + 1;
             }
 
-            // Primera pasada: marcar letras correctas
+            // First pass: mark correct positions
             for (let i = 0; i < guessArray.length; i++) {
                 if (i < wordArray.length && guessArray[i] === wordArray[i]) {
                     result[i] = 'correct';
-                    wordLetterCount[guessArray[i]]--;
+                    letterCount[guessArray[i]]--;
                 } else {
                     result[i] = null;
                 }
             }
 
-            // Segunda pasada: marcar letras parciales
+            // Second pass: mark partial matches
             for (let i = 0; i < guessArray.length; i++) {
                 if (result[i] === null) {
-                    if (wordLetterCount[guessArray[i]] > 0) {
+                    if (letterCount[guessArray[i]] > 0) {
                         result[i] = 'partial';
-                        wordLetterCount[guessArray[i]]--;
+                        letterCount[guessArray[i]]--;
                     } else {
                         result[i] = 'incorrect';
                     }
@@ -628,7 +609,7 @@
             return result;
         }
 
-        // Mostrar intento en la grilla
+        // Display attempt
         function displayAttempt(guess, evaluation) {
             const attemptRow = document.createElement('div');
             attemptRow.className = 'attempt-row';
@@ -649,7 +630,7 @@
             attemptsGrid.appendChild(attemptRow);
         }
 
-        // Actualizar palabra mostrada
+        // Update word display
         function updateWordDisplay(guess, evaluation) {
             if (!evaluation) return;
 
@@ -662,29 +643,27 @@
             }
         }
 
-        // Inicializar juego
+        // Initialize game
         function initGame() {
-            // Obtener o crear índice de palabra diaria
             const today = new Date().toDateString();
             const savedDate = localStorage.getItem('palabroso-date');
-            let wordIndex = parseInt(localStorage.getItem('palabroso-word-index') || '0');
             
-            // Si es un nuevo día, resetear al índice 0
             if (savedDate !== today) {
-                wordIndex = 0;
+                currentWordIndex = 0;
                 localStorage.setItem('palabroso-date', today);
-                localStorage.setItem('palabroso-word-index', '0');
+                localStorage.setItem('palabroso-index', '0');
+            } else {
+                currentWordIndex = parseInt(localStorage.getItem('palabroso-index') || '0');
             }
             
-            // Si ya completó todas las palabras del día (las 5)
-            if (wordIndex >= 5) {
-                showAllWordsCompleted();
+            if (currentWordIndex >= 5) {
+                showCompleted();
                 return;
             }
             
-            const selectedWord = MADRID_WORDS[wordIndex];
-            currentWord = selectedWord.word;
-            currentHint = selectedWord.hint;
+            const wordData = WORDS[currentWordIndex];
+            currentWord = wordData.word;
+            currentHint = wordData.hint;
             attempts = 0;
             gameOver = false;
             
@@ -692,37 +671,32 @@
             updateAttemptsCount();
             attemptsGrid.innerHTML = '';
             gameOverDiv.style.display = 'none';
-            hintDiv.innerHTML = `💡 Pista: ${currentHint} (${wordIndex + 1}/5)`;
+            hintDiv.innerHTML = `💡 Pista: ${currentHint} (${currentWordIndex + 1}/5)`;
             guessInput.value = '';
             guessInput.focus();
             
-            // Mostrar controles de juego
             document.querySelector('.input-container').style.display = 'flex';
             document.querySelector('.attempts-container').style.display = 'block';
             hintDiv.style.display = 'block';
         }
         
-        // Mostrar mensaje cuando se completan todas las palabras
-        function showAllWordsCompleted() {
+        function showCompleted() {
             gameOver = true;
             gameOverDiv.className = 'game-over win';
             gameResult.textContent = '¡RETO COMPLETADO! 🏆';
-            gameMessage.textContent = `¡Has completado las 5 palabras de hoy! Eres un verdadero gato madrileño. Vuelve mañana para más retos.`;
+            gameMessage.textContent = '¡Has completado las 5 palabras de hoy! Eres un verdadero gato madrileño. Vuelve mañana.';
             gameOverDiv.style.display = 'block';
             newGameBtn.style.display = 'none';
             
-            // Ocultar controles de juego
             document.querySelector('.input-container').style.display = 'none';
             document.querySelector('.attempts-container').style.display = 'none';
             hintDiv.style.display = 'none';
         }
 
-        // Actualizar contador de intentos
         function updateAttemptsCount() {
             attemptsCount.textContent = `${attempts}/${maxAttempts}`;
         }
 
-        // Hacer intento
         function makeGuess() {
             if (gameOver) return;
             
@@ -746,7 +720,6 @@
             updateWordDisplay(guess, evaluation);
 
             if (guess === currentWord) {
-                // Mostrar palabra completa
                 for (let i = 0; i < currentWord.length; i++) {
                     const letterBox = document.getElementById(`letter-${i}`);
                     letterBox.textContent = currentWord[i];
@@ -754,7 +727,6 @@
                 }
                 endGame(true);
             } else if (attempts >= maxAttempts) {
-                // Mostrar palabra completa al perder
                 for (let i = 0; i < currentWord.length; i++) {
                     const letterBox = document.getElementById(`letter-${i}`);
                     letterBox.textContent = currentWord[i];
@@ -767,30 +739,24 @@
             guessInput.focus();
         }
 
-        // Terminar juego
         function endGame(won) {
             gameOver = true;
             stats.gamesPlayed++;
             
-            // Obtener índice actual y avanzar al siguiente
-            let wordIndex = parseInt(localStorage.getItem('palabroso-word-index') || '0');
-            
             if (won) {
                 stats.gamesWon++;
-                wordIndex++;
-                localStorage.setItem('palabroso-word-index', wordIndex.toString());
+                currentWordIndex++;
+                localStorage.setItem('palabroso-index', currentWordIndex.toString());
                 
-                if (wordIndex >= 5) {
-                    // Completó las 5 palabras
+                if (currentWordIndex >= 5) {
                     gameOverDiv.className = 'game-over win';
                     gameResult.textContent = '¡RETO COMPLETADO! 🏆';
-                    gameMessage.textContent = `¡Increíble! Has completado las 5 palabras del día. Eres un auténtico gato madrileño. Vuelve mañana para más retos.`;
+                    gameMessage.textContent = '¡Has completado las 5 palabras del día! Eres un auténtico gato madrileño.';
                     newGameBtn.style.display = 'none';
                 } else {
-                    // Hay más palabras (hasta 5)
                     gameOverDiv.className = 'game-over win';
                     gameResult.textContent = '¡CORRECTO! 🎉';
-                    gameMessage.textContent = `¡Palabra ${wordIndex}/5 completada! "${currentWord}" era la respuesta.`;
+                    gameMessage.textContent = `¡Palabra ${currentWordIndex}/5 completada! "${currentWord}" era la respuesta.`;
                     newGameBtn.textContent = 'Siguiente Palabra';
                     newGameBtn.style.display = 'block';
                 }
@@ -810,14 +776,11 @@
         // Event listeners
         guessBtn.addEventListener('click', makeGuess);
         newGameBtn.addEventListener('click', initGame);
-
         guessInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                makeGuess();
-            }
+            if (e.key === 'Enter') makeGuess();
         });
 
-        // Inicializar
+        // Initialize
         loadStats();
         initGame();
     </script>
