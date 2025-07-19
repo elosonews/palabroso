@@ -684,13 +684,40 @@
             gameOver = true;
             gameOverDiv.className = 'game-over win';
             gameResult.textContent = '¡RETO COMPLETADO! 🏆';
-            gameMessage.textContent = '¡Has completado las 5 palabras de hoy! Eres un verdadero gato madrileño. Vuelve mañana.';
+            gameMessage.textContent = '¡Has completado las 5 palabras de hoy! Eres un verdadero gato madrileño.';
+            
+            // Agregar botón para jugar de nuevo
+            const resetBtn = document.createElement('button');
+            resetBtn.textContent = 'Jugar de Nuevo';
+            resetBtn.className = 'btn new-game-btn';
+            resetBtn.style.marginTop = '10px';
+            resetBtn.onclick = resetGame;
+            
+            gameOverDiv.innerHTML = `
+                <h3>${gameResult.textContent}</h3>
+                <p>${gameMessage.textContent}</p>
+            `;
+            gameOverDiv.appendChild(resetBtn);
+            
             gameOverDiv.style.display = 'block';
             newGameBtn.style.display = 'none';
             
             document.querySelector('.input-container').style.display = 'none';
             document.querySelector('.attempts-container').style.display = 'none';
             hintDiv.style.display = 'none';
+        }
+
+        // Nueva función para resetear completamente
+        function resetGame() {
+            // Resetear índice de palabras
+            currentWordIndex = 0;
+            localStorage.setItem('palabroso-index', '0');
+            
+            // Limpiar mensajes
+            gameOverDiv.style.display = 'none';
+            
+            // Reiniciar juego
+            initGame();
         }
 
         function updateAttemptsCount() {
