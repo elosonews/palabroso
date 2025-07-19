@@ -425,13 +425,28 @@
     </div>
 
     <script>
-    const MADRID_WORDS = [
-    { word: 'DONACION', hint: 'Urgente en hospitales madrileños' },
-    { word: 'JUVENTUD', hint: 'Fuente mítica del Parque del Oeste' },
-    { word: 'MULTA', hint: 'Lo que generan los radares madrileños' },
-    { word: 'AUTOCINE', hint: 'Lugar del Reggaeton Millennial Fest' },
-    { word: 'RADAR', hint: 'El del km 20 M-40 es el más activo' },
-];
+        const MADRID_WORDS = [
+            { word: 'METRO', hint: 'Transporte subterráneo de Madrid' },
+            { word: 'RETIRO', hint: 'Parque más famoso de Madrid' },
+            { word: 'CHUECA', hint: 'Barrio emblemático del centro' },
+            { word: 'COCIDO', hint: 'Plato típico madrileño' },
+            { word: 'CHAMBI', hint: 'Barrio de Chamberí' },
+            { word: 'TOLDO', hint: 'Nuevo elemento en la Puerta del Sol' },
+            { word: 'BATALLA', hint: 'Naval de Vallekas en julio' },
+            { word: 'SOLETES', hint: 'Reconocimientos gastronómicos Repsol' },
+            { word: 'FLAMENCO', hint: 'Arte en los refugios culturales' },
+            { word: 'MUSEO', hint: 'Refugio cultural en verano' },
+            { word: 'OBRAS', hint: 'Cortes de tráfico en Castellana' },
+            { word: 'CALOR', hint: 'Razón de los refugios culturales' },
+            { word: 'GUIRI', hint: 'Turista extranjero' },
+            { word: 'BOCATA', hint: 'Sándwich madrileño' },
+            { word: 'CHELI', hint: 'Jerga típica de Madrid' },
+            { word: 'MOSTO', hint: 'Bebida típica en las fiestas' },
+            { word: 'RASTRO', hint: 'Mercadillo dominical famoso' },
+            { word: 'PLAZA', hint: 'Espacios públicos emblemáticos' },
+            { word: 'PRADO', hint: 'Museo de arte famoso' },
+            { word: 'MADRID', hint: '¡La capital de España!' }
+        ];
 
         let currentWord = '';
         let currentHint = '';
@@ -577,8 +592,8 @@
                 localStorage.setItem('palabroso-word-index', '0');
             }
             
-            // Si ya completó todas las palabras del día
-            if (wordIndex >= MADRID_WORDS.length) {
+            // Si ya completó todas las palabras del día (las 5)
+            if (wordIndex >= 5) {
                 showAllWordsCompleted();
                 return;
             }
@@ -593,18 +608,24 @@
             updateAttemptsCount();
             attemptsGrid.innerHTML = '';
             gameOverDiv.style.display = 'none';
-            hintDiv.innerHTML = `💡 Pista: ${currentHint}`;
+            hintDiv.innerHTML = `💡 Pista: ${currentHint} (${wordIndex + 1}/5)`;
             guessInput.value = '';
             guessInput.focus();
+            
+            // Mostrar controles de juego
+            document.querySelector('.input-container').style.display = 'flex';
+            document.querySelector('.attempts-container').style.display = 'block';
+            hintDiv.style.display = 'block';
         }
         
         // Mostrar mensaje cuando se completan todas las palabras
         function showAllWordsCompleted() {
             gameOver = true;
             gameOverDiv.className = 'game-over win';
-            gameResult.textContent = '¡COMPLETADO! 🏆';
-            gameMessage.textContent = `¡Has adivinado todas las palabras de hoy! Vuelve mañana para más retos madrileños.`;
+            gameResult.textContent = '¡RETO COMPLETADO! 🏆';
+            gameMessage.textContent = `¡Has completado las 5 palabras de hoy! Eres un verdadero gato madrileño. Vuelve mañana para más retos.`;
             gameOverDiv.style.display = 'block';
+            newGameBtn.style.display = 'none';
             
             // Ocultar controles de juego
             document.querySelector('.input-container').style.display = 'none';
@@ -675,24 +696,26 @@
                 wordIndex++;
                 localStorage.setItem('palabroso-word-index', wordIndex.toString());
                 
-                if (wordIndex >= MADRID_WORDS.length) {
-                    // Completó todas las palabras
+                if (wordIndex >= 5) {
+                    // Completó las 5 palabras
                     gameOverDiv.className = 'game-over win';
-                    gameResult.textContent = '¡TODAS COMPLETADAS! 🏆';
-                    gameMessage.textContent = `¡Increíble! Has adivinado las ${MADRID_WORDS.length} palabras. Eres un auténtico gato madrileño. Vuelve mañana para más retos.`;
+                    gameResult.textContent = '¡RETO COMPLETADO! 🏆';
+                    gameMessage.textContent = `¡Increíble! Has completado las 5 palabras del día. Eres un auténtico gato madrileño. Vuelve mañana para más retos.`;
                     newGameBtn.style.display = 'none';
                 } else {
-                    // Hay más palabras
+                    // Hay más palabras (hasta 5)
                     gameOverDiv.className = 'game-over win';
                     gameResult.textContent = '¡CORRECTO! 🎉';
-                    gameMessage.textContent = `¡Palabra ${wordIndex}/${MADRID_WORDS.length} completada! "${currentWord}" era la respuesta.`;
+                    gameMessage.textContent = `¡Palabra ${wordIndex}/5 completada! "${currentWord}" era la respuesta.`;
                     newGameBtn.textContent = 'Siguiente Palabra';
+                    newGameBtn.style.display = 'block';
                 }
             } else {
                 gameOverDiv.className = 'game-over lose';
                 gameResult.textContent = '¡FALLASTE! 😅';
                 gameMessage.textContent = `La palabra era "${currentWord}". ¡Inténtalo de nuevo!`;
                 newGameBtn.textContent = 'Reintentar';
+                newGameBtn.style.display = 'block';
             }
             
             saveStats();
