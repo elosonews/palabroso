@@ -425,13 +425,28 @@
     </div>
 
     <script>
-const MADRID_WORDS = [
-    { word: 'DONACION', hint: 'Urgente en hospitales madrileños' },
-    { word: 'JUVENTUD', hint: 'Fuente mítica del Parque del Oeste' },
-    { word: 'MULTA', hint: 'Lo que generan los radares madrileños' },
-    { word: 'AUTOCINE', hint: 'Lugar del Reggaeton Millennial Fest' },
-    { word: 'RADAR', hint: 'El del km 20 M-40 es el más activo' },
-];
+        const MADRID_WORDS = [
+            { word: 'METRO', hint: 'Transporte subterráneo de Madrid' },
+            { word: 'RETIRO', hint: 'Parque más famoso de Madrid' },
+            { word: 'CHUECA', hint: 'Barrio emblemático del centro' },
+            { word: 'COCIDO', hint: 'Plato típico madrileño' },
+            { word: 'CHAMBI', hint: 'Barrio de Chamberí' },
+            { word: 'TOLDO', hint: 'Nuevo elemento en la Puerta del Sol' },
+            { word: 'BATALLA', hint: 'Naval de Vallekas en julio' },
+            { word: 'SOLETES', hint: 'Reconocimientos gastronómicos Repsol' },
+            { word: 'FLAMENCO', hint: 'Arte en los refugios culturales' },
+            { word: 'MUSEO', hint: 'Refugio cultural en verano' },
+            { word: 'OBRAS', hint: 'Cortes de tráfico en Castellana' },
+            { word: 'CALOR', hint: 'Razón de los refugios culturales' },
+            { word: 'GUIRI', hint: 'Turista extranjero' },
+            { word: 'BOCATA', hint: 'Sándwich madrileño' },
+            { word: 'CHELI', hint: 'Jerga típica de Madrid' },
+            { word: 'MOSTO', hint: 'Bebida típica en las fiestas' },
+            { word: 'RASTRO', hint: 'Mercadillo dominical famoso' },
+            { word: 'PLAZA', hint: 'Espacios públicos emblemáticos' },
+            { word: 'PRADO', hint: 'Museo de arte famoso' },
+            { word: 'MADRID', hint: '¡La capital de España!' }
+        ];
 
         let currentWord = '';
         let currentHint = '';
@@ -565,9 +580,27 @@ const MADRID_WORDS = [
 
         // Inicializar juego
         function initGame() {
-            const randomWord = MADRID_WORDS[Math.floor(Math.random() * MADRID_WORDS.length)];
-            currentWord = randomWord.word;
-            currentHint = randomWord.hint;
+            // Obtener o crear índice de palabra diaria
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('palabroso-date');
+            let wordIndex = parseInt(localStorage.getItem('palabroso-word-index') || '0');
+            
+            // Si es un nuevo día, resetear al índice 0
+            if (savedDate !== today) {
+                wordIndex = 0;
+                localStorage.setItem('palabroso-date', today);
+                localStorage.setItem('palabroso-word-index', '0');
+            }
+            
+            // Si ya completó todas las palabras del día
+            if (wordIndex >= MADRID_WORDS.length) {
+                showAllWordsCompleted();
+                return;
+            }
+            
+            const selectedWord = MADRID_WORDS[wordIndex];
+            currentWord = selectedWord.word;
+            currentHint = selectedWord.hint;
             attempts = 0;
             gameOver = false;
             
@@ -578,6 +611,20 @@ const MADRID_WORDS = [
             hintDiv.innerHTML = `💡 Pista: ${currentHint}`;
             guessInput.value = '';
             guessInput.focus();
+        }
+        
+        // Mostrar mensaje cuando se completan todas las palabras
+        function showAllWordsCompleted() {
+            gameOver = true;
+            gameOverDiv.className = 'game-over win';
+            gameResult.textContent = '¡COMPLETADO! 🏆';
+            gameMessage.textContent = `¡Has adivinado todas las palabras de hoy! Vuelve mañana para más retos madrileños.`;
+            gameOverDiv.style.display = 'block';
+            
+            // Ocultar controles de juego
+            document.querySelector('.input-container').style.display = 'none';
+            document.querySelector('.attempts-container').style.display = 'none';
+            hintDiv.style.display = 'none';
         }
 
         // Actualizar contador de intentos
@@ -635,15 +682,32 @@ const MADRID_WORDS = [
             gameOver = true;
             stats.gamesPlayed++;
             
+            // Obtener índice actual y avanzar al siguiente
+            let wordIndex = parseInt(localStorage.getItem('palabroso-word-index') || '0');
+            
             if (won) {
                 stats.gamesWon++;
-                gameOverDiv.className = 'game-over win';
-                gameResult.textContent = '¡ENHORABUENA! 🎉';
-                gameMessage.textContent = `¡Eres un auténtico madrileño! La palabra era "${currentWord}".`;
+                wordIndex++;
+                localStorage.setItem('palabroso-word-index', wordIndex.toString());
+                
+                if (wordIndex >= MADRID_WORDS.length) {
+                    // Completó todas las palabras
+                    gameOverDiv.className = 'game-over win';
+                    gameResult.textContent = '¡TODAS COMPLETADAS! 🏆';
+                    gameMessage.textContent = `¡Increíble! Has adivinado las ${MADRID_WORDS.length} palabras. Eres un auténtico gato madrileño. Vuelve mañana para más retos.`;
+                    newGameBtn.style.display = 'none';
+                } else {
+                    // Hay más palabras
+                    gameOverDiv.className = 'game-over win';
+                    gameResult.textContent = '¡CORRECTO! 🎉';
+                    gameMessage.textContent = `¡Palabra ${wordIndex}/${MADRID_WORDS.length} completada! "${currentWord}" era la respuesta.`;
+                    newGameBtn.textContent = 'Siguiente Palabra';
+                }
             } else {
                 gameOverDiv.className = 'game-over lose';
-                gameResult.textContent = '¡GAME OVER! 😅';
-                gameMessage.textContent = `La palabra era "${currentWord}". ¡Sigue practicando!`;
+                gameResult.textContent = '¡FALLASTE! 😅';
+                gameMessage.textContent = `La palabra era "${currentWord}". ¡Inténtalo de nuevo!`;
+                newGameBtn.textContent = 'Reintentar';
             }
             
             saveStats();
